@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Honeypot Management Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="/scripts/script.js"></script>
+</head
+><body>
+    <div class="header d-flex justify-content-between align-items-center px-3">
+        <a href="/"><img src="assets/logo.png" alt="Modpot Logo"></a>
+        <span>Modpot v0.1</span>
+        <div>
+            <button id="darkModeToggle" class="btn"><i class="fas fa-moon"></i></button>
+            <a href="https://github.com/referefref/modpot" class="ml-2"><i class="fab fa-github"></i></a>
+            <a href="https://jamesbrine.com.au" class="ml-2"><i class="fas fa-globe"></i></a>
+        </div>
+    </div>
+
+<div class="container mt-4 main-content-container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Honeypot Management</h3>
+                </div>
+                <div class="card-body table-container">
+                    <h4>Honeypot Configurations</h4>
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>CVE</th>
+                                    <th>Application</th>
+                                    <th>Port</th>
+                                    <th>Template File</th>
+                                    <th>Endpoint</th>
+                                    <th>Regex</th>
+                                    <th>Created</th>
+                                    <th>Updated</th>
+                                    <th>Redirect URL</th>
+                                    <th>Enabled</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="configsTableBody">
+                                <!-- Configuration rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <h4 class="mt-4">Honeypot Logs</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Date/Time</th>
+                                    <th>Source IP</th>
+                                    <th>Destination IP</th>
+                                    <th>Event</th>
+                                    <th>Regex Match</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsTableBody">
+                                <!-- Log rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="configModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add/Update Configuration</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="configForm">
+                    <div class="form-group">
+                        <label for="configName">Name</label>
+                        <input type="text" class="form-control" id="configName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="configCVE">CVE</label>
+                        <input type="text" class="form-control" id="configCVE" name="cve">
+                    </div>
+                    <div class="form-group">
+                        <label for="configApplication">Application</label>
+                        <input type="text" class="form-control" id="configApplication" name="application">
+                    </div>
+                    <div class="form-group">
+                        <label for="configPort">Port</label>
+                        <input type="number" class="form-control" id="configPort" name="port">
+                    </div>
+                    <div class="form-group">
+                        <label for="configTemplateHTMLFile">Template HTML File</label>
+                        <input type="text" class="form-control" id="configTemplateHTMLFile" name="template_html_file">
+                    </div>
+                    <div class="form-group">
+                        <label for="configDetectionEndpoint">Detection Endpoint</label>
+                        <input type="text" class="form-control" id="configDetectionEndpoint" name="detection_endpoint">
+                    </div>
+                    <div class="form-group">
+                        <label for="configRequestRegex">Request Regex</label>
+                        <input type="text" class="form-control" id="configRequestRegex" name="request_regex">
+                    </div>
+                    <div class="form-group">
+                        <label for="configDateCreated">Date Created</label>
+                        <input type="date" class="form-control" id="configDateCreated" name="date_created">
+                    </div>
+                    <div class="form-group">
+                        <label for="configDateUpdated">Date Updated</label>
+                        <input type="date" class="form-control" id="configDateUpdated" name="date_updated">
+                    </div>
+                    <div class="form-group">
+                        <label for="configRedirectURL">Redirect URL</label>
+                        <input type="text" class="form-control" id="configRedirectURL" name="redirect_url">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="configEnabled" name="enabled">
+                            <label class="form-check-label" for="configEnabled">Enabled</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="submitConfigForm()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="footer">
+        Modpot v0.1 - jamesbrine.com.au
+    </div>
+
+</body>
+</html>
