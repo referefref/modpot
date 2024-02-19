@@ -1,0 +1,168 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #ffffff; /* Light background */
+}
+
+@media (max-width: 768px) {
+    .main-content-container {
+        max-width: 100%;
+    }
+}
+
+.main-content-container {
+    max-width: 90%;
+    margin: auto;
+}
+
+.dark-mode {
+    background-color: #121212; /* Dark background */
+}
+
+.header {
+    background-color: #000;
+    color: #fff;
+    padding: 10px 0;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header img {
+    width: 50px;
+    height: auto;
+}
+
+.header a, .fa-github, .fa-globe {
+    color: #fff;
+}
+
+.dark-mode .header {
+    background-color: #1a1a1a; /* Darker shade for header */
+}
+
+.dark-mode .header a, .dark-mode .fa-github, .dark-mode .fa-globe {
+    color: #ccc; /* Lighter text color for links */
+}
+
+.fa-github, .fa-globe {
+    font-size: 24px;
+}
+
+.table thead th {
+    vertical-align: middle;
+    background-color: #000;
+    color: #fff;
+}
+
+.dark-mode .table thead th {
+    background-color: #333; /* Darker background for thead */
+    color: #ddd; /* Lighter text color */
+}
+
+.table tbody td {
+    vertical-align: middle;
+    background-color: #f2f2f2;
+    color: #000;
+}
+
+.dark-mode .table tbody td {
+    background-color: #242424; /* Dark background for tbody */
+    color: #eee; /* Lighter text color */
+}
+
+.footer {
+    background-color: #grey;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    font-size: 10px;
+}
+
+.dark-mode .footer {
+    background-color: #333; /* Darker footer background */
+}
+
+.event-column {
+    max-width: 350px; /* Adjust as necessary */
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.card-body.table-responsive {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.main-content-container .card {
+    margin-bottom: 20px; /* Adds consistent spacing between cards */
+}
+
+.btn-dark-mode-toggle {
+    background-color: #333; /* Dark mode toggle button background */
+    color: #fff; /* Dark mode toggle button text color */
+}
+
+/* Styles for dark mode toggle effect */
+.dark-mode .btn-dark-mode-toggle {
+    background-color: #eee; /* Light mode background */
+    color: #333; /* Light mode text color */
+}
+
+/* Dark mode adjustments for cards and card headers */
+.dark-mode .card {
+    background-color: #242424; /* Darker background for the card */
+    border-color: #333333; /* Darker border for the card */
+    color: #ffffff; /* Light text color for content within the card */
+}
+
+.dark-mode .card-header {
+    background-color: #333333; /* Darker background for the card header */
+    color: #ffffff; /* Light text color for the card header */
+}
+
+.dark-mode .card .card-title {
+    color: #ffffff; /* Ensure the card title also adheres to the dark mode text color */
+}
+
+/* Ensure links within the card-header are also styled appropriately for dark mode */
+.dark-mode .card-header a {
+    color: #ffffff;
+}
+
+.dark-mode .card-header a:hover {
+    color: #dddddd; /* Slightly lighter color on hover for distinction */
+}
+
+.dark-mode .modal-content {
+    background-color: #333; /* Dark background for modal content */
+    color: #ddd; /* Light text color for modal content */
+}
+
+.dark-mode .modal-header {
+    border-bottom: 1px solid #444; /* Dark border for modal header */
+}
+
+.dark-mode .modal-footer {
+    border-top: 1px solid #444; /* Dark border for modal footer */
+}
+
+.dark-mode .modal-body {
+    background-color: #242424; /* Slightly lighter dark background for modal body */
+}
+
+/* Apply dark mode styles to form inputs and buttons within the modal */
+.dark-mode .form-control, .dark-mode .btn {
+    background-color: #444; /* Dark background for form elements and buttons */
+    color: #fff; /* Light text color */
+    border: 1px solid #555; /* Slightly lighter border for visibility */
+}
+
+.dark-mode .btn-secondary, .dark-mode .btn-primary {
+    border-color: #666; /* Dark border for buttons to distinguish */
+}
+
+/* Optional: Adjust link colors in dark mode for better visibility */
+.dark-mode a {
+    color: #9ecfff; /* Light blue color for links */
+}
