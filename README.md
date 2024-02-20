@@ -2,6 +2,8 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues)
 
 # modpot
+![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+
 modpot is a modular web application honeypot framework written in Golang and making use of gin framework.
 It is the antithesis to [***honeydet***](https://github.com/referefref/honeydet) in many ways and allows the user to deploy simple html/js honeypots that mimic web applications in order to detect requests and form entries that are related to attacks. It has the accidental capability to act as a phishing server, capturing credentials though this is not its main intention.
 modpot is best utilised alongside [***honeypage***](https://github.com/referefref/honeypage) a tool that creates flattened single html file versions of web applications, which makes them portable and easy to use with modpot.
