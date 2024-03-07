@@ -11,6 +11,14 @@ honeypots:
     redirect_url: "https://jamesbrine.com.au/"
     date_created: "2022-01-01"
     date_updated: "2022-01-02"
+    responders:
+      - engine: "/usr/bin/bash"
+        script: "email.sh"
+        parameters: ["honeypots.id", "honeypots.application", "honeypot_logs.datetime", "honeypot_logs.ip_source", "honeypot_logs.log_event"]
+      - engine: "/usr/bin/python3"
+        script: "sms.py"
+        parameters: ["honeypots.id", "honeypots.application", "honeypot_logs.datetime", "honeypot_logs.ip_source", "honeypot_logs.log_event"]
+
 
   - id: 2
     name: "ExampleHoneypot2"
