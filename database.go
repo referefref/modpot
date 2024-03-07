@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
@@ -12,18 +13,25 @@ import (
 var db *sql.DB
 
 type HoneypotConfig struct {
-	ID                int    `yaml:"id"`
-	Name              string `yaml:"name"`
-	CVE               string `yaml:"cve"`
-	Application       string `yaml:"application"`
-	Port              int    `yaml:"port"`
-	TemplateHTMLFile  string `yaml:"template_html_file"`
-	DetectionEndpoint string `yaml:"detection_endpoint"`
-	RequestRegex      string `yaml:"request_regex"`
-	DateCreated       string `yaml:"date_created"`
-	DateUpdated       string `yaml:"date_updated"`
-	RedirectURL	  string `yaml:"redirect_url"`
-	Enabled           bool   `yaml:"enabled"`
+	ID                int               `yaml:"id"`
+	Name              string            `yaml:"name"`
+	CVE               string            `yaml:"cve"`
+	Application       string            `yaml:"application"`
+	Port              int               `yaml:"port"`
+	TemplateHTMLFile  string            `yaml:"template_html_file"`
+	DetectionEndpoint string            `yaml:"detection_endpoint"`
+	RequestRegex      string            `yaml:"request_regex"`
+	Responders        []ResponderConfig `yaml:"responders"`
+	DateCreated       string            `yaml:"date_created"`
+	DateUpdated       string            `yaml:"date_updated"`
+	RedirectURL       string            `yaml:"redirect_url"`
+	Enabled           bool              `yaml:"enabled"`
+}
+
+type ResponderConfig struct {
+	Engine     string   `yaml:"engine"`
+	Script     string   `yaml:"script"`
+	Parameters []string `yaml:"parameters"`
 }
 
 func InitDB(filepath string) {
@@ -48,6 +56,7 @@ func InitDB(filepath string) {
 		date_created TEXT,
 		date_updated TEXT,
 		redirect_url TEXT,
+		responders TEXT,
 		enabled BOOLEAN DEFAULT true
 	);`
 
@@ -79,30 +88,12 @@ func InitDB(filepath string) {
 	logInfo("Honeypot_logs table created or already exists")
 }
 
-func InsertHoneypotConfig(config *HoneypotConfig) error {
-    insertSQL := `INSERT INTO honeypots(name, cve, application, port, template_html_file, detection_endpoint, request_regex, date_created, date_updated, redirect_url, enabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-
-    var redirectURL sql.NullString
-    if config.RedirectURL != "" {
-        redirectURL = sql.NullString{String: config.RedirectURL, Valid: true}
-    } else {
-        redirectURL = sql.NullString{Valid: false}
-    }
-
-    _, err := db.Exec(insertSQL, config.Name, config.CVE, config.Application, config.Port, config.TemplateHTMLFile, config.DetectionEndpoint, config.RequestRegex, config.DateCreated, config.DateUpdated, redirectURL, config.Enabled)
-    if err != nil {
-        logError("Failed to insert config: " + err.Error())
-        return err
-    }
-    logInfo(fmt.Sprintf("Config '%s' inserted successfully", config.Name))
-    return nil
-}
-
 func SelectHoneypotConfig(id int) (*HoneypotConfig, error) {
     config := &HoneypotConfig{}
     var redirectURLPtr *string
+    var respondersJSON string
 
-    query := `SELECT id, name, cve, application, port, template_html_file, detection_endpoint, request_regex, date_created, date_updated, redirect_url, enabled FROM honeypots WHERE id = ?`
+    query := `SELECT id, name, cve, application, port, template_html_file, detection_endpoint, request_regex, date_created, date_updated, redirect_url, responders, enabled FROM honeypots WHERE id = ?`
     err := db.QueryRow(query, id).Scan(
         &config.ID,
         &config.Name,
@@ -115,6 +106,7 @@ func SelectHoneypotConfig(id int) (*HoneypotConfig, error) {
         &config.DateCreated,
         &config.DateUpdated,
         &redirectURLPtr,
+        &respondersJSON,
         &config.Enabled,
     )
 
@@ -136,23 +128,85 @@ func SelectHoneypotConfig(id int) (*HoneypotConfig, error) {
         logInfo(fmt.Sprintf("Redirect URL for config ID %d is NULL or empty", id))
     }
 
+    if respondersJSON != "" {
+        var responders []ResponderConfig
+        if err := json.Unmarshal([]byte(respondersJSON), &responders); err != nil {
+            logError("Failed to unmarshal responders: " + err.Error())
+        } else {
+            config.Responders = responders
+        }
+    }
+
     logInfo(fmt.Sprintf("Successfully selected config: %s (ID %d)", config.Name, config.ID))
     return config, nil
 }
 
+func InsertHoneypotConfig(config *HoneypotConfig) error {
+    respondersJSON, err := json.Marshal(config.Responders)
+    if err != nil {
+        logError("Failed to serialize responders: " + err.Error())
+        return err
+    }
+
+    insertSQL := `INSERT INTO honeypots(name, cve, application, port, template_html_file, detection_endpoint, request_regex, date_created, date_updated, redirect_url, responders, enabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
+    _, err = db.Exec(insertSQL, config.Name, config.CVE, config.Application, config.Port, config.TemplateHTMLFile, config.DetectionEndpoint, config.RequestRegex, config.DateCreated, config.DateUpdated, config.RedirectURL, string(respondersJSON), config.Enabled)
+    if err != nil {
+        logError("Failed to insert config: " + err.Error())
+        return err
+    }
+    logInfo("Config inserted successfully")
+    return nil
+}
+
 func UpdateHoneypotConfig(config *HoneypotConfig) error {
-	updateSQL := `UPDATE honeypots SET name = ?, cve = ?, application = ?, port = ?, template_html_file = ?, detection_endpoint = ?, request_regex = ?, date_created = ?, date_updated = ?, enabled = ? WHERE id = ?`
+	respondersJSON, err := json.Marshal(config.Responders)
+	if err != nil {
+		logError("Failed to serialize responders: " + err.Error())
+		return err
+	}
+
+	updateSQL := `UPDATE honeypots SET 
+                  name = ?, 
+                  cve = ?, 
+                  application = ?, 
+                  port = ?, 
+                  template_html_file = ?, 
+                  detection_endpoint = ?, 
+                  request_regex = ?, 
+                  date_created = ?, 
+                  date_updated = ?, 
+                  redirect_url = ?, 
+                  responders = ?, 
+                  enabled = ? 
+                  WHERE id = ?`
+
 	statement, err := db.Prepare(updateSQL)
 	if err != nil {
 		logError("Failed to prepare config update: " + err.Error())
 		return err
 	}
 
-	_, err = statement.Exec(config.Name, config.CVE, config.Application, config.Port, config.TemplateHTMLFile, config.DetectionEndpoint, config.RequestRegex, config.DateCreated, config.DateUpdated, config.Enabled, config.ID)
+	_, err = statement.Exec(
+		config.Name,
+		config.CVE,
+		config.Application,
+		config.Port,
+		config.TemplateHTMLFile,
+		config.DetectionEndpoint,
+		config.RequestRegex,
+		config.DateCreated,
+		config.DateUpdated,
+		config.RedirectURL,
+		string(respondersJSON),
+		config.Enabled,
+		config.ID,
+	)
 	if err != nil {
 		logError("Failed to update config: " + err.Error())
 		return err
 	}
+
 	logInfo(fmt.Sprintf("Config '%s' updated successfully", config.Name))
 	return nil
 }
@@ -184,20 +238,20 @@ type HoneypotLog struct {
 	RegexMatch    string `json:"regex_match"`
 }
 
-func InsertHoneypotLog(log *HoneypotLog) error {
+func InsertHoneypotLog(log *HoneypotLog) (int64, error) {
 	insertSQL := `INSERT INTO honeypot_logs(honeypotID, port, datetime, ip_source, ip_destination, log_event, regex_match) VALUES (?, ?, ?, ?, ?, ?, ?)`
-	statement, err := db.Prepare(insertSQL)
-	if err != nil {
-		logError("Failed to prepare log insertion: " + err.Error())
-		return err
-	}
-	_, err = statement.Exec(log.HoneypotID, log.Port, log.Datetime, log.IPSource, log.IPDestination, log.LogEvent, log.RegexMatch)
+	result, err := db.Exec(insertSQL, log.HoneypotID, log.Port, log.Datetime, log.IPSource, log.IPDestination, log.LogEvent, log.RegexMatch)
 	if err != nil {
 		logError("Failed to insert log: " + err.Error())
-		return err
+		return 0, err
 	}
-	logInfo("Log inserted successfully")
-	return nil
+	logID, err := result.LastInsertId()
+	if err != nil {
+		logError("Failed to retrieve last insert ID: " + err.Error())
+		return 0, err
+	}
+	logInfo(fmt.Sprintf("Log inserted successfully with ID: %d", logID))
+	return logID, nil
 }
 
 func SelectHoneypotLog(honeypotID int) ([]HoneypotLog, error) {
@@ -214,12 +268,12 @@ func SelectHoneypotLog(honeypotID int) ([]HoneypotLog, error) {
 		var log HoneypotLog
 		if err := rows.Scan(&log.ID, &log.HoneypotID, &log.Port, &log.Datetime, &log.IPSource, &log.IPDestination, &log.LogEvent, &log.RegexMatch); err != nil {
 			logError("Failed to scan log from database: " + err.Error())
-			continue 
+			continue
 		}
 		logs = append(logs, log)
 	}
 
-	if err = rows.Err(); err != nil { 
+	if err = rows.Err(); err != nil {
 		logError("Error iterating through logs: " + err.Error())
 		return nil, err
 	}
@@ -272,28 +326,27 @@ func RegisterAPIRoutes(router *gin.Engine) {
 
 	// Honeypot logs routes
 	router.GET("/api/logs", listAllHoneypotLogs)
-	router.POST("/api/logs", insertHoneypotLog)
+	//router.POST("/api/logs", insertHoneypotLog)
 	router.GET("/api/logs/:honeypotID", selectHoneypotLogs)
 	router.PUT("/api/logs/:id", updateHoneypotLog)
 	router.DELETE("/api/logs/:id", deleteHoneypotLog)
 }
 
 func insertHoneypotConfig(c *gin.Context) {
-	var config HoneypotConfig
-	if err := c.ShouldBindJSON(&config); err != nil {
-		logError("Error binding JSON for config insert: " + err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+    var config HoneypotConfig
+    if err := c.ShouldBindJSON(&config); err != nil {
+        logError("Error binding JSON for config insert: " + err.Error())
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
 
-	if err := InsertHoneypotConfig(&config); err != nil {
-		logError("Error inserting config: " + err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+    if err := InsertHoneypotConfig(&config); err != nil {
+        logError("Error inserting config: " + err.Error())
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
 
-	logInfo(fmt.Sprintf("Config inserted successfully: %+v", config))
-	c.JSON(http.StatusOK, gin.H{"status": "OK"})
+    c.JSON(http.StatusOK, gin.H{"status": "OK", "message": "Configuration added successfully"})
 }
 
 func selectHoneypotConfig(c *gin.Context) {
@@ -360,52 +413,53 @@ func deleteHoneypotConfig(c *gin.Context) {
 }
 
 func EnableDisableHoneypot(c *gin.Context) {
-    id, err := strconv.Atoi(c.Param("id"))
-    if err != nil {
-        logError("Invalid ID: " + err.Error())
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-        return
-    }
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		logError("Invalid ID: " + err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 
-    var requestBody struct {
-        Enabled bool `json:"enabled"`
-    }
-    if err := c.ShouldBindJSON(&requestBody); err != nil {
-        logError("Error binding JSON: " + err.Error())
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
-
-    _, err = db.Exec("UPDATE honeypots SET enabled = ? WHERE id = ?", requestBody.Enabled, id)
-    if err != nil {
-        logError("Failed to update enabled state: " + err.Error())
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    logInfo(fmt.Sprintf("Honeypot configuration with ID %d enabled/disabled successfully", id))
-    c.JSON(http.StatusOK, gin.H{"status": "OK", "id": id, "enabled": requestBody.Enabled})
-}
-
-// Honeypot Log Handlers
-
-func insertHoneypotLog(c *gin.Context) {
-	var log HoneypotLog
-	if err := c.ShouldBindJSON(&log); err != nil {
-		logError("Error binding JSON for log insert: " + err.Error())
+	var requestBody struct {
+		Enabled bool `json:"enabled"`
+	}
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		logError("Error binding JSON: " + err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := InsertHoneypotLog(&log); err != nil {
-		logError("Error inserting log: " + err.Error())
+	_, err = db.Exec("UPDATE honeypots SET enabled = ? WHERE id = ?", requestBody.Enabled, id)
+	if err != nil {
+		logError("Failed to update enabled state: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	logInfo(fmt.Sprintf("Log inserted successfully: %+v", log))
-	c.JSON(http.StatusOK, gin.H{"status": "OK"})
+	logInfo(fmt.Sprintf("Honeypot configuration with ID %d enabled/disabled successfully", id))
+	c.JSON(http.StatusOK, gin.H{"status": "OK", "id": id, "enabled": requestBody.Enabled})
 }
+
+// Honeypot Log Handlers
+
+// Enhanced insertHoneypotLog with verbose logging
+//func insertHoneypotLog(c *gin.Context) {
+//	var log HoneypotLog
+//	if err := c.ShouldBindJSON(&log); err != nil {
+//		logError("Error binding JSON for log insert: " + err.Error())
+//		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+//		return
+//	}
+//
+//	if err := InsertHoneypotLog(&log); err != nil {
+//		logError("Error inserting log: " + err.Error())
+//		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+//		return
+//	}
+//
+//	logInfo(fmt.Sprintf("Log inserted successfully: %+v", log))
+//	c.JSON(http.StatusOK, gin.H{"status": "OK"})
+//}
 
 func selectHoneypotLogs(c *gin.Context) {
 	honeypotID, err := strconv.Atoi(c.Param("honeypotID"))
@@ -470,9 +524,50 @@ func deleteHoneypotLog(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "OK"})
 }
 
+func SelectHoneypotLogByID(logID int64) (*HoneypotLog, error) {
+    var log HoneypotLog
+    err := db.QueryRow("SELECT id, honeypotID, port, datetime, ip_source, ip_destination, log_event, regex_match FROM honeypot_logs WHERE id = ?", logID).Scan(
+        &log.ID, &log.HoneypotID, &log.Port, &log.Datetime, &log.IPSource, &log.IPDestination, &log.LogEvent, &log.RegexMatch,
+    )
+    if err != nil {
+        return nil, err
+    }
+    return &log, nil
+}
+
+func listAllHoneypotLogs(c *gin.Context) {
+	var logs []HoneypotLog
+	query := "SELECT id, honeypotID, port, datetime, ip_source, ip_destination, log_event, regex_match FROM honeypot_logs"
+	rows, err := db.Query(query)
+	if err != nil {
+		logError("Failed to query database for logs: " + err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to query database for logs"})
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var log HoneypotLog
+		if err := rows.Scan(&log.ID, &log.HoneypotID, &log.Port, &log.Datetime, &log.IPSource, &log.IPDestination, &log.LogEvent, &log.RegexMatch); err != nil {
+			logError("Failed to scan log from database: " + err.Error())
+			continue
+		}
+		logs = append(logs, log)
+	}
+
+	if err = rows.Err(); err != nil {
+		logError("Error iterating through logs: " + err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error iterating through logs"})
+		return
+	}
+
+	logInfo(fmt.Sprintf("Total %d logs listed successfully", len(logs)))
+	c.JSON(http.StatusOK, logs)
+}
+
 func listAllHoneypotConfigs(c *gin.Context) {
     var configs []HoneypotConfig
-    query := "SELECT id, name, cve, application, port, template_html_file, detection_endpoint, request_regex, date_created, date_updated, redirect_url, enabled FROM honeypots"
+    query := "SELECT id, name, cve, application, port, template_html_file, detection_endpoint, request_regex, date_created, date_updated, redirect_url, responders, enabled FROM honeypots"
     rows, err := db.Query(query)
     if err != nil {
         logError("Failed to query database for configs: " + err.Error())
@@ -483,10 +578,17 @@ func listAllHoneypotConfigs(c *gin.Context) {
 
     for rows.Next() {
         var config HoneypotConfig
-        if err := rows.Scan(&config.ID, &config.Name, &config.CVE, &config.Application, &config.Port, &config.TemplateHTMLFile, &config.DetectionEndpoint, &config.RequestRegex, &config.DateCreated, &config.DateUpdated, &config.RedirectURL, &config.Enabled); err != nil {
+        var respondersJSON string
+        if err := rows.Scan(&config.ID, &config.Name, &config.CVE, &config.Application, &config.Port, &config.TemplateHTMLFile, &config.DetectionEndpoint, &config.RequestRegex, &config.DateCreated, &config.DateUpdated, &config.RedirectURL, &respondersJSON, &config.Enabled); err != nil {
             logError("Failed to scan config from database: " + err.Error())
             continue
         }
+
+        if err := json.Unmarshal([]byte(respondersJSON), &config.Responders); err != nil {
+            logError(fmt.Sprintf("Error deserializing responders JSON: %s", err.Error()))
+            continue
+        }
+
         configs = append(configs, config)
     }
 
@@ -498,34 +600,4 @@ func listAllHoneypotConfigs(c *gin.Context) {
 
     logInfo(fmt.Sprintf("Total %d configs listed successfully", len(configs)))
     c.JSON(http.StatusOK, configs)
-}
-
-func listAllHoneypotLogs(c *gin.Context) {
-    var logs []HoneypotLog
-    query := "SELECT id, honeypotID, port, datetime, ip_source, ip_destination, log_event, regex_match FROM honeypot_logs"
-    rows, err := db.Query(query)
-    if err != nil {
-        logError("Failed to query database for logs: " + err.Error())
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to query database for logs"})
-        return
-    }
-    defer rows.Close()
-
-    for rows.Next() {
-        var log HoneypotLog
-        if err := rows.Scan(&log.ID, &log.HoneypotID, &log.Port, &log.Datetime, &log.IPSource, &log.IPDestination, &log.LogEvent, &log.RegexMatch); err != nil {
-            logError("Failed to scan log from database: " + err.Error())
-            continue
-        }
-        logs = append(logs, log)
-    }
-
-    if err = rows.Err(); err != nil {
-        logError("Error iterating through logs: " + err.Error())
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Error iterating through logs"})
-        return
-    }
-
-    logInfo(fmt.Sprintf("Total %d logs listed successfully", len(logs)))
-    c.JSON(http.StatusOK, logs)
 }
