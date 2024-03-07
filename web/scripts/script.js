@@ -82,9 +82,9 @@ function loadLogs() {
 				row.insertCell(1).innerText = log.Datetime;
 				row.insertCell(2).innerText = log.IPSource;
 				row.insertCell(3).innerText = log.IPDestination;
-				let eventCell = row.insertCell(4);
+				let eventCell = row.insertCell(4); 
 				eventCell.innerText = log.LogEvent;
-				eventCell.classList.add('event-column');
+				eventCell.classList.add('event-column'); 
 				let regexMatchCell = row.insertCell(5);
 				regexMatchCell.innerText = log.regex_match === 'no' ? 'No' : 'Yes';
 			});
@@ -95,7 +95,7 @@ function loadLogs() {
 
 function adjustEventColumnStyling() {
 	document.querySelectorAll('#logsTable tbody tr').forEach(row => {
-		const eventCell = row.cells[4];
+		const eventCell = row.cells[4]; 
 		if (eventCell) {
 			eventCell.classList.add('event-column');
 		}
@@ -103,69 +103,84 @@ function adjustEventColumnStyling() {
 }
 
 function showConfigForm(config = null) {
-	const form = document.getElementById('configForm');
-	form.reset(); 
+    const form = document.getElementById('configForm');
+    form.reset(); 
 
-	if (config) {
-		document.getElementById('configName').value = config.Name;
-		document.getElementById('configCVE').value = config.CVE;
-		document.getElementById('configApplication').value = config.Application;
-		document.getElementById('configPort').value = config.Port;
-		document.getElementById('configTemplateHTMLFile').value = config.TemplateHTMLFile;
-		document.getElementById('configDetectionEndpoint').value = config.DetectionEndpoint;
-		document.getElementById('configRequestRegex').value = config.RequestRegex;
-		document.getElementById('configDateCreated').value = config.DateCreated;
-		document.getElementById('configDateUpdated').value = config.DateUpdated;
-		document.getElementById('configRedirectURL').value = config.RedirectURL;
-		document.getElementById('configEnabled').checked = config.Enabled;
-		form.dataset.configId = config.ID; 
-	} else {
-		delete form.dataset.configId; 
-	}
+    const respondersContainer = document.querySelector('#respondersContainer');
+    respondersContainer.innerHTML = '';
 
-	$('#configModal').modal('show');
+    if (config) {
+        document.getElementById('configName').value = config.Name;
+        document.getElementById('configCVE').value = config.CVE;
+        document.getElementById('configApplication').value = config.Application;
+        document.getElementById('configPort').value = config.Port;
+        document.getElementById('configTemplateHTMLFile').value = config.TemplateHTMLFile;
+        document.getElementById('configDetectionEndpoint').value = config.DetectionEndpoint;
+        document.getElementById('configRequestRegex').value = config.RequestRegex;
+        document.getElementById('configDateCreated').value = config.DateCreated;
+        document.getElementById('configDateUpdated').value = config.DateUpdated;
+        document.getElementById('configRedirectURL').value = config.RedirectURL;
+        document.getElementById('configEnabled').checked = config.Enabled;
+        form.dataset.configId = config.ID; 
+
+        if (config.Responders && config.Responders.length > 0) {
+            config.Responders.forEach(responder => {
+                addResponder(responder);
+            });
+        }
+    } else {
+        delete form.dataset.configId; 
+    }
+
+    $('#configModal').modal('show'); 
 }
 
 function submitConfigForm() {
-	const form = document.getElementById('configForm');
-	const configId = form.dataset.configId;
-	const formData = {
-		Name: form.configName.value,
-		CVE: form.configCVE.value,
-		Application: form.configApplication.value,
-		Port: parseInt(form.configPort.value, 10),
-		TemplateHTMLFile: form.configTemplateHTMLFile.value,
-		DetectionEndpoint: form.configDetectionEndpoint.value,
-		RequestRegex: form.configRequestRegex.value,
-		DateCreated: form.configDateCreated.value,
-		DateUpdated: form.configDateUpdated.value,
-		RedirectURL: form.configRedirectURL.value,
-		Enabled: form.configEnabled.checked
-	};
-
-	let url = '/api/configs' + (configId ? `/${configId}` : '');
-	let method = configId ? 'PUT' : 'POST';
-
-	fetch(url, {
-		method: method,
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(formData),
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error('Network response was not ok');
-		}
-		return response.json();
-	})
-	.then(() => {
-		$('#configModal').modal('hide');
-		loadConfigs();
-	})
-	.catch(error => {
-		console.error('Error:', error);
-	});
+    const form = document.getElementById('configForm');
+    const configId = form.dataset.configId; 
+    
+    const formData = {
+        Name: form.configName.value,
+        CVE: form.configCVE.value,
+        Application: form.configApplication.value,
+        Port: parseInt(form.configPort.value, 10),
+        TemplateHTMLFile: form.configTemplateHTMLFile.value,
+        DetectionEndpoint: form.configDetectionEndpoint.value,
+        RequestRegex: form.configRequestRegex.value,
+        DateCreated: form.configDateCreated.value,
+        DateUpdated: form.configDateUpdated.value,
+        RedirectURL: form.configRedirectURL.value,
+        Enabled: form.configEnabled.checked,
+        Responders: [{
+            engine: document.getElementById('responderEngine').value,
+            script: document.getElementById('responderScript').value,
+            parameters: document.getElementById('responderParameters').value.split(',')
+        }]
+    };
+    
+    let url = '/api/configs' + (configId ? `/${configId}` : ''); 
+    let method = configId ? 'PUT' : 'POST'; 
+    
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(() => {
+        $('#configModal').modal('hide');
+        loadConfigs(); 
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 function toggleConfig(configId, enabled) {
@@ -188,7 +203,7 @@ function enableDisableHoneypot(configId, enabled) {
 	})
 	.then(() => {
 		console.log(`Config ${configId} enabled/disabled to ${enabled}`);
-		loadConfigs();
+		loadConfigs(); 
 	})
 	.catch(error => {
 		console.error('Error enabling/disabling configuration:', error);
@@ -202,7 +217,7 @@ function removeConfig(configId) {
 		})
 		.then(response => {
 			if(response.ok) {
-				loadConfigs();
+				loadConfigs(); 
 				alert('Configuration removed successfully.');
 			} else {
 				alert('Failed to remove configuration.');
@@ -210,4 +225,25 @@ function removeConfig(configId) {
 		})
 		.catch(error => console.error('Error removing configuration:', error));
 	}
+}
+
+function addResponder(responder = null) {
+    let template = document.querySelector('#responderTemplate').content.cloneNode(true);
+    let container = document.querySelector('#respondersContainer');
+
+    if (responder) {
+        let inputs = template.querySelectorAll('input');
+        inputs[0].value = responder.Engine; 
+        inputs[1].value = responder.Script; 
+        inputs[2].value = responder.Parameters.join(', '); 
+    }
+    container.appendChild(template);
+}
+
+function addEmptyResponder() {
+    addResponder();
+}
+
+function removeResponder(button) {
+    button.closest('.responder-form').remove();
 }
