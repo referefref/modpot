@@ -19,7 +19,6 @@ honeypots:
         script: "sms.py"
         parameters: ["honeypots.id", "honeypots.application", "honeypot_logs.datetime", "honeypot_logs.ip_source", "honeypot_logs.log_event"]
 
-
   - id: 2
     name: "ExampleHoneypot2"
     cve: "CVE-2022-YYYY"
