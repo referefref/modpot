@@ -19,6 +19,7 @@ The parameters that can be passed to responders are ID, Application, Datetime, I
 
 Included are the following examples:
 * Email
+* iptables - time window blocking
 * SMS (Using twilio)
 * Slack - webhook
 * Syslog
