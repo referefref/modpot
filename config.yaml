@@ -18,7 +18,10 @@ honeypots:
       - engine: "/usr/bin/python3"
         script: "sms.py"
         parameters: ["honeypots.id", "honeypots.application", "honeypot_logs.datetime", "honeypot_logs.ip_source", "honeypot_logs.log_event"]
-
+      - engine: "/usr/bin/bash"
+        script: "iptables_block.sh"
+        parameters: ["honeypot_logs.ip_source"]
+        
   - id: 2
     name: "ExampleHoneypot2"
     cve: "CVE-2022-YYYY"
