@@ -4,12 +4,12 @@
 # modpot v0.3.11 (Not for workgroups)
 ![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 
+![modpot-wide](https://github.com/referefref/modpot/assets/56499429/409d59b0-9e14-45f7-abdc-abe721e0e678)
+![image](https://github.com/referefref/modpot/assets/56499429/f13d4e39-becd-48da-aee1-29e21b921ce4)
+
 modpot is a modular web application honeypot framework written in Golang and making use of gin framework.
 It is the antithesis to [***honeydet***](https://github.com/referefref/honeydet) in many ways and allows the user to deploy simple html/js honeypots that mimic web applications in order to detect requests and form entries that are related to attacks. Responders offer a modular capacity for automation and logging pipelines and are not limited by programming language.
 modpot is best utilised alongside [***honeypage***](https://github.com/referefref/honeypage) a tool that creates flattened single html file versions of web applications, which makes them portable and easy to use with modpot.
-
-![modpot-wide](https://github.com/referefref/modpot/assets/56499429/409d59b0-9e14-45f7-abdc-abe721e0e678)
-![image](https://github.com/referefref/modpot/assets/56499429/f13d4e39-becd-48da-aee1-29e21b921ce4)
 
 ## Responders
 ![image](https://github.com/referefref/modpot/assets/56499429/c0f09791-3ebc-4159-b47e-a1669485f29d)
@@ -47,6 +47,9 @@ honeypots:
       - engine: python3
         script: sms.py
         parameters: ["honeypots.id", "honeypots.application", "honeypot_logs.datetime", "honeypot_logs.ip_source", "honeypot_logs.log_event"]
+      - engine: "/usr/bin/bash"
+        script: "iptables_block.sh"
+        parameters: ["honeypot_logs.ip_source"]
 
   - id: 2
     name: "ExampleHoneypot2"
