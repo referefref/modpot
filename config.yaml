@@ -48,13 +48,26 @@ honeypots:
     redirect_url: "https://jamesbrine.com.au"
     enabled: true
 
-  - id: 3
+  - id: 4
     name: "phpMyAdmin Login"
     cve: ""
     application: "phpMyAdmin"
     port: 8444
     template_html_file: "phpMyAdmin.html"
     detection_endpoint: "/phpMyAdmin/login"
+    request_regex: "^username=.*&password=.*&$"
+    date_created: "2024-03-12"
+    date_updated: "2024-03-12"
+    redirect_url: "302.php"
+    enabled: true
+
+  - id: 5
+    name: "Outlook Web Application"
+    cve: ""
+    application: "OWA"
+    port: 8445
+    template_html_file: "owa.html"
+    detection_endpoint: "logon.aspx"
     request_regex: "^username=.*&password=.*&$"
     date_created: "2024-03-12"
     date_updated: "2024-03-12"
