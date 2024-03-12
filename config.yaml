@@ -49,14 +49,14 @@ honeypots:
     enabled: true
 
   - id: 3
-    name: "SMRS Portal"
+    name: "phpMyAdmin Login"
     cve: ""
-    application: "SMRS Portal"
-    port: 8004
-    template_html_file: "test.html"
-    detection_endpoint: "Test"
-    request_regex: "^.*1=1.*$"
-    date_created: "2024-02-17"
-    date_updated: "2024-02-17"
-    redirect_url: "https://jamesbrine.com.au"
+    application: "phpMyAdmin"
+    port: 8444
+    template_html_file: "phpMyAdmin.html"
+    detection_endpoint: "/phpMyAdmin/login"
+    request_regex: "^username=.*&password=.*&$"
+    date_created: "2024-03-12"
+    date_updated: "2024-03-12"
+    redirect_url: "302.php"
     enabled: true
