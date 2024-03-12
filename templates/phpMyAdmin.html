@@ -1,0 +1,1296 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr"><head>
+    <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"/>
+    <title>phpMyAdmin </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<script type="text/javascript">
+//<![CDATA[
+// show login form in top frame
+if (top != self) {
+    window.top.location.href=location;
+}
+//]]>
+</script>
+<style>html {
+    font-size: 82%;
+}
+
+input, select, textarea {
+    font-size: 1em;
+}
+
+div.item label {
+    white-space: nowrap;
+}
+
+/* @deprecated */
+.nowrap {
+    white-space: nowrap;
+}
+div.nowrap {
+    margin: 0;
+    padding: 0;
+}
+
+.syntax_comment {color: #808000;}
+.syntax_comment_mysql {}
+.syntax_comment_ansi {}
+.syntax_comment_c {}
+.syntax_digit {}
+.syntax_digit_hex {color: teal;}
+.syntax_digit_integer {color: teal;}
+.syntax_digit_float {color: aqua;}
+.syntax_punct {color: fuchsia;}
+.syntax_alpha {}
+.syntax_alpha_columnType {color: #FF9900;}
+.syntax_alpha_columnAttrib {color: #0000FF;}
+.syntax_alpha_reservedWord {color: #990099;}
+.syntax_alpha_functionName {color: #FF0000;}
+.syntax_alpha_identifier {color: black;}
+.syntax_alpha_charset {color: #6495ed;}
+.syntax_alpha_variable {color: #800000;}
+.syntax_quote {color: #008000;}
+.syntax_quote_double {}
+.syntax_quote_single {}
+.syntax_quote_backtick {}
+.syntax_indent0 {margin-left: 0em;}
+.syntax_indent1 {margin-left: 1em;}
+.syntax_indent2 {margin-left: 2em;}
+.syntax_indent3 {margin-left: 3em;}
+.syntax_indent4 {margin-left: 4em;}
+.syntax_indent5 {margin-left: 5em;}
+.syntax_indent6 {margin-left: 6em;}
+.syntax_indent7 {margin-left: 7em;}
+/******************************************************************************/
+/* general tags */
+body {
+    font-family:        sans-serif;
+    padding:            0;
+    margin:             0.5em;
+    color:              #000000;
+    background:         #F5F5F5;
+}
+
+textarea, tt, pre, code {
+    font-family:        monospace;
+}
+
+h1 {
+    font-size:          140%;
+    font-weight:        bold;
+}
+
+h2 {
+    font-size:          120%;
+    font-weight:        bold;
+}
+
+h3 {
+    font-weight:        bold;
+}
+
+a:link,
+a:visited,
+a:active {
+    text-decoration:    none;
+    color:              #0000FF;
+}
+
+a:hover {
+    text-decoration:    underline;
+    color:              #FF0000;
+}
+
+dfn {
+    font-style:         normal;
+}
+
+dfn:hover {
+    font-style:         normal;
+    cursor:             help;
+}
+
+th {
+    font-weight:        bold;
+    color:              #000000;
+    background:         #D3DCE3;
+}
+
+a img {
+    border:             0;
+}
+
+hr {
+    color:              #000000;
+    background-color:   #000000;
+    border:             0;
+    height:             1px;
+}
+
+form {
+    padding:            0;
+    margin:             0;
+    display:            inline;
+}
+
+textarea {
+    overflow:           visible;
+}
+
+fieldset {
+    margin-top:         1em;
+    border:             #000000 solid 1px;
+    padding:            0.5em;
+    background:         #E5E5E5;
+}
+
+fieldset fieldset {
+    margin:             0.8em;
+}
+
+fieldset legend {
+    font-weight:        bold;
+    color:              #444444;
+    background-color:   transparent;
+}
+
+/* buttons in some browsers (eg. Konqueror) are block elements,
+   this breaks design */
+button {
+    display:            inline;
+}
+
+table caption,
+table th,
+table td {
+    padding:            0.1em 0.5em 0.1em 0.5em;
+    margin:             0.1em;
+    vertical-align:     top;
+}
+
+img,
+input,
+select,
+button {
+    vertical-align:     middle;
+}
+
+
+/******************************************************************************/
+/* classes */
+
+fieldset.tblFooters {
+    margin-top:         0;
+    margin-bottom:      0.5em;
+    /* avoid a thick line since this should be used under another fieldset */
+    border-top:         0;
+    text-align:         right;
+    float:              none;
+    clear:              both;
+}
+
+fieldset .formelement {
+    float:              left;
+    margin-right:       0.5em;
+    /* IE */
+    white-space:        nowrap;
+}
+
+/* revert for Gecko */
+fieldset div[class=formelement] {
+    white-space:        normal;
+}
+
+button.mult_submit {
+    border:             none;
+    background-color:   transparent;
+}
+
+/* odd items 1,3,5,7,... */
+table tr.odd th,
+.odd {
+    background: #E5E5E5;
+}
+
+/* even items 2,4,6,8,... */
+table tr.even th,
+.even {
+    background: #D5D5D5;
+}
+
+/* odd table rows 1,3,5,7,... */
+table tr.odd th,
+table tr.odd,
+table tr.even th,
+table tr.even {
+    text-align:         left;
+}
+
+/* marked table rows */
+table tr.marked th,
+table tr.marked {
+    background:   #FFCC99;
+    color:   #000000;
+}
+
+/* hovered items */
+.odd:hover,
+.even:hover,
+.hover {
+    background: #CCFFCC;
+    color: #000000;
+}
+
+/* hovered table rows */
+table tr.odd:hover th,
+table tr.even:hover th,
+table tr.hover th {
+    background:   #CCFFCC;
+    color:   #000000;
+}
+
+/**
+ * marks table rows/cells if the db field is in a where condition
+ */
+tr.condition th,
+tr.condition td,
+td.condition,
+th.condition {
+    border: 1px solid #FFCC99;
+}
+
+table .value {
+    text-align:         right;
+    white-space:        normal;
+}
+/* IE doesnt handles 'pre' right */
+table [class=value] {
+    white-space:        normal;
+}
+
+
+.value {
+    font-family:        monospace;
+}
+.value .attention {
+    color:              red;
+    font-weight:        bold;
+}
+.value .allfine {
+    color:              green;
+}
+
+
+img.lightbulb {
+    cursor:             pointer;
+}
+
+.pdflayout {
+    overflow:           hidden;
+    clip:               inherit;
+    background-color:   #FFFFFF;
+    display:            none;
+    border:             1px solid #000000;
+    position:           relative;
+}
+
+.pdflayout_table {
+    background:         #D3DCE3;
+    color:              #000000;
+    overflow:           hidden;
+    clip:               inherit;
+    z-index:            2;
+    display:            inline;
+    visibility:         inherit;
+    cursor:             move;
+    position:           absolute;
+    font-size:          80%;
+    border:             1px dashed #000000;
+}
+
+/* MySQL Parser */
+.syntax {
+    font-size:          80%;
+}
+
+.syntax_comment {
+    padding-left:       4pt;
+    padding-right:      4pt;
+}
+
+.syntax_digit {
+}
+
+.syntax_digit_hex {
+}
+
+.syntax_digit_integer {
+}
+
+.syntax_digit_float {
+}
+
+.syntax_punct {
+}
+
+.syntax_alpha {
+}
+
+.syntax_alpha_columnType {
+    text-transform:     uppercase;
+}
+
+.syntax_alpha_columnAttrib {
+    text-transform:     uppercase;
+}
+
+.syntax_alpha_reservedWord {
+    text-transform:     uppercase;
+    font-weight:        bold;
+}
+
+.syntax_alpha_functionName {
+    text-transform:     uppercase;
+}
+
+.syntax_alpha_identifier {
+}
+
+.syntax_alpha_charset {
+}
+
+.syntax_alpha_variable {
+}
+
+.syntax_quote {
+    white-space:        pre;
+}
+
+.syntax_quote_backtick {
+}
+
+/* leave some space between icons and text */
+.icon {
+    vertical-align:     middle;
+    margin-right:       0.3em;
+    margin-left:        0.3em;
+}
+/* no extra space in table cells */
+td .icon {
+    margin: 0;
+}
+
+.selectallarrow {
+    margin-right: 0.3em;
+    margin-left: 0.6em;
+}
+
+/* message boxes: warning, error, confirmation */
+.notice {
+    color:              #000000;
+    background-color:   #FFFFDD;
+}
+h1.notice,
+div.notice {
+    margin:             0.5em 0 0.5em 0;
+    border:             0.1em solid #FFD700;
+        background-image:   url(./themes/original/img/s_notice.png);
+    background-repeat:  no-repeat;
+            background-position: 10px 50%;
+    padding:            10px 10px 10px 36px;
+            }
+.notice h1 {
+    border-bottom:      0.1em solid #FFD700;
+    font-weight:        bold;
+    text-align:         left;
+    margin:             0 0 0.2em 0;
+}
+
+.warning {
+    color:              #CC0000;
+    background-color:   #FFFFCC;
+}
+p.warning,
+h1.warning,
+div.warning {
+    margin:             0.5em 0 0.5em 0;
+    border:             0.1em solid #CC0000;
+        background-image:   url(./themes/original/img/s_warn.png);
+    background-repeat:  no-repeat;
+            background-position: 10px 50%;
+    padding:            10px 10px 10px 36px;
+            }
+.warning h1 {
+    border-bottom:      0.1em solid #cc0000;
+    font-weight:        bold;
+    text-align:         left;
+    margin:             0 0 0.2em 0;
+}
+
+.error {
+    background-color:   #FFFFCC;
+    color:              #ff0000;
+}
+
+h1.error,
+div.error {
+    margin:             0.5em 0 0.5em 0;
+    border:             0.1em solid #ff0000;
+        background-image:   url(./themes/original/img/s_error.png);
+    background-repeat:  no-repeat;
+            background-position: 10px 50%;
+    padding:            10px 10px 10px 36px;
+            }
+div.error h1 {
+    border-bottom:      0.1em solid #ff0000;
+    font-weight:        bold;
+    text-align:         left;
+    margin:             0 0 0.2em 0;
+}
+
+.confirmation {
+    background-color:   #FFFFCC;
+}
+fieldset.confirmation {
+    border:             0.1em solid #FF0000;
+}
+fieldset.confirmation legend {
+    border-left:        0.1em solid #FF0000;
+    border-right:       0.1em solid #FF0000;
+    font-weight:        bold;
+        background-image:   url(./themes/original/img/s_really.png);
+    background-repeat:  no-repeat;
+            background-position: 5px 50%;
+    padding:            0.2em 0.2em 0.2em 25px;
+            }
+/* end messageboxes */
+
+
+.tblcomment {
+    font-size:          70%;
+    font-weight:        normal;
+    color:              #000099;
+}
+
+.tblHeaders {
+    font-weight:        bold;
+    color:              #000000;
+    background:         #D3DCE3;
+}
+
+.tblFooters {
+    font-weight:        normal;
+    color:              #000000;
+    background:         #D3DCE3;
+
+}
+
+.tblHeaders a:link,
+.tblHeaders a:active,
+.tblHeaders a:visited,
+.tblFooters a:link,
+.tblFooters a:active,
+.tblFooters a:visited {
+    color:              #0000FF;
+}
+
+.tblHeaders a:hover,
+.tblFooters a:hover {
+    color:              #FF0000;
+}
+
+/* forbidden, no privilegs */
+.noPrivileges {
+    color:              #FF0000;
+    font-weight:        bold;
+}
+
+/* disabled text */
+.disabled,
+.disabled a:link,
+.disabled a:active,
+.disabled a:visited {
+    color:              #666666;
+}
+
+.disabled a:hover {
+    color:              #666666;
+    text-decoration:    none;
+}
+
+tr.disabled td,
+td.disabled {
+    background-color:   #cccccc;
+}
+
+/**
+ * login form
+ */
+body.loginform h1,
+body.loginform a.logo {
+    display: block;
+    text-align: center;
+}
+
+body.loginform {
+    text-align: center;
+}
+
+body.loginform div.container {
+    text-align: left;
+    width: 30em;
+    margin: 0 auto;
+}
+
+form.login label {
+    float: left;
+    width: 10em;
+    font-weight: bolder;
+}
+
+
+/******************************************************************************/
+/* specific elements */
+
+/* topmenu */
+ul#topmenu {
+    font-weight:        bold;
+    list-style-type:    none;
+    margin:             0;
+    padding:            0;
+}
+
+ul#topmenu li {
+    float:              left;
+    margin:             0;
+    padding:            0;
+    vertical-align:     middle;
+}
+
+#topmenu img {
+    vertical-align:     middle;
+    margin-right:       0.1em;
+}
+
+/* default tab styles */
+.tab, .tabcaution, .tabactive {
+    display:            block;
+    margin:             0.2em 0.2em 0 0.2em;
+    padding:            0.2em 0.2em 0 0.2em;
+    white-space:        nowrap;
+}
+
+/* disabled tabs */
+span.tab {
+    color:              #666666;
+}
+
+/* disabled drop/empty tabs */
+span.tabcaution {
+    color:              #ff6666;
+}
+
+/* enabled drop/empty tabs */
+a.tabcaution {
+    color:              #FF0000;
+}
+a.tabcaution:hover {
+    color: #FFFFFF;
+    background-color:   #FF0000;
+}
+
+#topmenu {
+    margin-top:         0.5em;
+    padding:            0.1em 0.3em 0.1em 0.3em;
+}
+
+ul#topmenu li {
+    border-bottom:      1pt solid black;
+}
+
+/* default tab styles */
+.tab, .tabcaution, .tabactive {
+    background-color:   #E5E5E5;
+    border:             1pt solid #D5D5D5;
+    border-bottom:      0;
+    border-top-left-radius: 0.4em;
+    border-top-right-radius: 0.4em;
+}
+
+/* enabled hover/active tabs */
+a.tab:hover,
+a.tabcaution:hover,
+.tabactive,
+.tabactive:hover {
+    margin:             0;
+    padding:            0.2em 0.4em 0.2em 0.4em;
+    text-decoration:    none;
+}
+
+a.tab:hover,
+.tabactive {
+    background-color:   #F5F5F5;
+}
+
+/* to be able to cancel the bottom border, use <li class="active"> */
+ul#topmenu li.active {
+     border-bottom:      1pt solid #F5F5F5;
+}
+
+/* disabled drop/empty tabs */
+span.tab,
+a.warning,
+span.tabcaution {
+    cursor:             url(./themes/original/img/error.ico), default;
+}
+/* end topmenu */
+
+
+/* Calendar */
+table.calendar {
+    width:              100%;
+}
+table.calendar td {
+    text-align:         center;
+}
+table.calendar td a {
+    display:            block;
+}
+
+table.calendar td a:hover {
+    background-color:   #CCFFCC;
+}
+
+table.calendar th {
+    background-color:   #D3DCE3;
+}
+
+table.calendar td.selected {
+    background-color:   #FFCC99;
+}
+
+img.calendar {
+    border:             none;
+}
+form.clock {
+    text-align:         center;
+}
+/* end Calendar */
+
+
+/* table stats */
+div#tablestatistics {
+    border-bottom: 0.1em solid #669999;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+div#tablestatistics table {
+    float: left;
+    margin-bottom: 0.5em;
+    margin-right: 0.5em;
+}
+
+div#tablestatistics table caption {
+    margin-right: 0.5em;
+}
+/* END table stats */
+
+
+/* server privileges */
+#tableuserrights td,
+#tablespecificuserrights td,
+#tabledatabases td {
+    vertical-align: middle;
+}
+/* END server privileges */
+
+
+
+/* Heading */
+#serverinfo {
+    font-weight:        bold;
+    margin-bottom:      0.5em;
+}
+
+#serverinfo .item {
+    white-space:        nowrap;
+}
+
+#span_table_comment {
+    font-weight:        normal;
+    font-style:         italic;
+    white-space:        nowrap;
+}
+
+#serverinfo img {
+    margin:             0 0.1em 0 0.2em;
+}
+
+
+#textSQLDUMP {
+    width:              95%;
+    height:             95%;
+    font-family:        "Courier New", Courier, mono;
+    font-size:          110%;
+}
+
+#TooltipContainer {
+    position:           absolute;
+    z-index:            99;
+    width:              20em;
+    height:             auto;
+    overflow:           visible;
+    visibility:         hidden;
+    background-color:   #ffffcc;
+    color:              #006600;
+    border:             0.1em solid #000000;
+    padding:            0.5em;
+}
+
+/* user privileges */
+#fieldset_add_user_login div.item {
+    border-bottom:      1px solid silver;
+    padding-bottom:     0.3em;
+    margin-bottom:      0.3em;
+}
+
+#fieldset_add_user_login label {
+    float:              left;
+    display:            block;
+    width:              10em;
+    max-width:          100%;
+    text-align:         right;
+    padding-right:      0.5em;
+}
+
+#fieldset_add_user_login span.options #select_pred_username,
+#fieldset_add_user_login span.options #select_pred_hostname,
+#fieldset_add_user_login span.options #select_pred_password {
+    width:              100%;
+    max-width:          100%;
+}
+
+#fieldset_add_user_login span.options {
+    float: left;
+    display: block;
+    width: 12em;
+    max-width: 100%;
+    padding-right: 0.5em;
+}
+
+#fieldset_add_user_login input {
+    width: 12em;
+    clear: right;
+    max-width: 100%;
+}
+
+#fieldset_add_user_login span.options input {
+    width: auto;
+}
+
+#fieldset_user_priv div.item {
+    float: left;
+    width: 9em;
+    max-width: 100%;
+}
+
+#fieldset_user_priv div.item div.item {
+    float: none;
+}
+
+#fieldset_user_priv div.item label {
+    white-space: nowrap;
+}
+
+#fieldset_user_priv div.item select {
+    width: 100%;
+}
+
+#fieldset_user_global_rights fieldset {
+    float: left;
+}
+/* END user privileges */
+
+
+/* serverstatus */
+div#serverstatus table caption a.top {
+    float: right;
+}
+
+div#serverstatus div#serverstatusqueriesdetails table,
+div#serverstatus table#serverstatustraffic,
+div#serverstatus table#serverstatusconnections {
+    float: left;
+}
+
+#serverstatussection,
+.clearfloat {
+    clear: both;
+}
+div#serverstatussection table {
+    width: 100%;
+    margin-bottom: 1em;
+}
+div#serverstatussection table .name {
+    width: 18em;
+}
+div#serverstatussection table .value {
+    width: 6em;
+}
+
+div#serverstatus table tbody td.descr a,
+div#serverstatus table .tblFooters a {
+    white-space: nowrap;
+}
+div#serverstatus div#statuslinks a:before,
+div#serverstatus div#sectionlinks a:before,
+div#serverstatus table tbody td.descr a:before,
+div#serverstatus table .tblFooters a:before {
+    content: '[';
+}
+div#serverstatus div#statuslinks a:after,
+div#serverstatus div#sectionlinks a:after,
+div#serverstatus table tbody td.descr a:after,
+div#serverstatus table .tblFooters a:after {
+    content: ']';
+}
+/* end serverstatus */
+
+/* querywindow */
+body#bodyquerywindow {
+    margin: 0;
+    padding: 0;
+    background-image: none;
+    background-color: #F5F5F5;
+}
+
+div#querywindowcontainer {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+div#querywindowcontainer fieldset {
+    margin-top: 0;
+}
+/* END querywindow */
+
+
+/* querybox */
+
+div#sqlquerycontainer {
+    float: left;
+    width: 69%;
+    /* height: 15em; */
+}
+
+div#tablefieldscontainer {
+    float: right;
+    width: 29%;
+    /* height: 15em; */
+}
+
+div#tablefieldscontainer select {
+    width: 100%;
+    /* height: 12em; */
+}
+
+textarea#sqlquery {
+    width: 100%;
+    /* height: 100%; */
+}
+
+div#queryboxcontainer div#bookmarkoptions {
+    margin-top: 0.5em;
+}
+/* end querybox */
+
+/* main page */
+#maincontainer {
+    background-image: url(./themes/original/img/logo_right.png);
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    border-bottom: 1px solid silver;
+}
+
+#mysqlmaininformation,
+#pmamaininformation {
+    float: left;
+    width: 49%;
+}
+
+#maincontainer ul {
+    list-style-image: url(./themes/original/img/item_ltr.png);
+    vertical-align: middle;
+}
+
+#maincontainer li {
+    margin-bottom:  0.3em;
+}
+/* END main page */
+
+
+/* iconic view for ul items */
+li#li_create_database {
+    list-style-image: url(./themes/original/img/b_newdb.png);
+}
+
+li#li_select_lang {
+    list-style-image: url(./themes/original/img/s_lang.png);
+}
+
+li#li_select_mysql_collation,
+li#li_select_mysql_charset {
+    list-style-image: url(./themes/original/img/s_asci.png);
+}
+
+li#li_select_theme{
+    list-style-image: url(./themes/original/img/s_theme.png);
+}
+
+li#li_server_info{
+    list-style-image: url(./themes/original/img/s_host.png);
+}
+
+li#li_user_info{
+    /* list-style-image: url(./themes/original/img/s_rights.png); */
+}
+
+li#li_mysql_status{
+    list-style-image: url(./themes/original/img/s_status.png);
+}
+
+li#li_mysql_variables{
+    list-style-image: url(./themes/original/img/s_vars.png);
+}
+
+li#li_mysql_processes{
+    list-style-image: url(./themes/original/img/s_process.png);
+}
+
+li#li_mysql_collations{
+    list-style-image: url(./themes/original/img/s_asci.png);
+}
+
+li#li_mysql_engines{
+    list-style-image: url(./themes/original/img/b_engine.png);
+}
+
+li#li_mysql_binlogs {
+    list-style-image: url(./themes/original/img/s_tbl.png);
+}
+
+li#li_mysql_databases {
+    list-style-image: url(./themes/original/img/s_db.png);
+}
+
+li#li_export {
+    list-style-image: url(./themes/original/img/b_export.png);
+}
+
+li#li_import {
+    list-style-image: url(./themes/original/img/b_import.png);
+}
+
+li#li_change_password {
+    list-style-image: url(./themes/original/img/s_passwd.png);
+}
+
+li#li_log_out {
+    list-style-image: url(./themes/original/img/s_loggoff.png);
+}
+
+li#li_pma_docs {
+    list-style-image: url(./themes/original/img/b_docs.png);
+}
+
+li#li_phpinfo {
+    list-style-image: url(./themes/original/img/php_sym.png);
+}
+
+li#li_pma_homepage {
+    list-style-image: url(./themes/original/img/b_home.png);
+}
+
+li#li_mysql_privilegs{
+    list-style-image: url(./themes/original/img/s_rights.png);
+}
+
+li#li_switch_dbstats {
+    list-style-image: url(./themes/original/img/b_dbstatistics.png);
+}
+
+li#li_flush_privileges {
+    list-style-image: url(./themes/original/img/s_reload.png);
+}
+/* END iconic view for ul items */
+
+
+#body_browse_foreigners {
+    background:         #D0DCE0;
+    margin:             0.5em 0.5em 0 0.5em;
+}
+
+#bodyquerywindow {
+    background:         #D0DCE0;
+}
+
+#bodythemes {
+    width: 500px;
+    margin: auto;
+    text-align: center;
+}
+
+#bodythemes img {
+    border: 0.1em solid black;
+}
+
+#bodythemes a:hover img {
+    border: 0.1em solid red;
+}
+
+#fieldset_select_fields {
+    float: left;
+}
+
+#selflink {
+    clear: both;
+    display: block;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    width: 100%;
+    border-top: 0.1em solid silver;
+    text-align: right;
+}
+
+#table_innodb_bufferpool_usage,
+#table_innodb_bufferpool_activity {
+    float: left;
+}
+
+#div_mysql_charset_collations table {
+    float: left;
+}
+
+#div_table_order {
+    min-width: 48%;
+    float: left;
+}
+
+#div_table_rename {
+    min-width: 48%;
+    float: left;
+}
+
+#div_table_copy {
+    min-width: 48%;
+    float: left;
+}
+
+#div_table_options {
+    clear: both;
+    min-width: 48%;
+    float: left;
+}
+
+#qbe_div_table_list {
+    float: left;
+}
+
+#qbe_div_sql_query {
+    float: left;
+}
+
+label.desc {
+    width: 30em;
+    float: left;
+}
+</style></head>
+
+<body class="loginform">
+
+    
+<div class="container">
+<a href="http://www.phpmyadmin.net" target="_blank" class="logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKwAAABkCAMAAAAsVCszAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAALuUExURenp7fbr2/OmMvvBavbt4f2pKuytTvu8XNDKw+vbw9fDpfGpPv+ZAMzMzPnRlNnBnPajJvu5VsLC1Pbp1P6mJPjaq/6iGeuuUuW0bPyuOt29jJKStdHS3r290fXx6Z2dvfnTnG1tnu7u8MnJ2aSkwffiwfjWouO2cv6hFfSkLN/Wyuzl3POsQu3QpfffunV1o3t7ptXFrI2NsvfPlNbW4eTk6tHKvvu9YeqxXNPHs/jctPnPjq2tx8/Lx/6mIf6kHdy+kfrHevXn0fmhHv+aBPXy7bKyyra2zf+cCP6aBvrLhffkyf2bBvrIfeC7hffmzfO9bP2uN/y0SPrFdfy2TdLIu/u/ZOro5fuxQf2wPeTczt3d5fDw8t67hvXz8PXYrPumJmZmmfrJgeHh6ISErH5+qLm5zuG5fOLf2/+dC/Xy7PW1Vf2qLefn7PfXpfueEqCgvvbu5P6jG+TGmdjY4/mfGO3AfJWVuf6gEueyY/yzRfnNiv6fEN3Jq/Dew/ycCv2bCfrEcoCAqvycDffjxP6eDv6eDPDEgaqqxc7O3IqKsN3MsoODrfLw79ra5P2rMM3N2/iiIpqau/6cB6+vyPXx7H+Brfjcs/jbsPTCdv2sM/ukIWtrnPqfF/T09OLi4uDg4OHh4fPz8+Xl5ePj4/Ly8s/Pz+bm5t/f3/Hx8e/v7+fn5+rq6vDw8Ojo6OTk5O3t7dDQ0NLS0tHR0e7u7vX19dnZ2dXV1ezs7Ovr69ra2t7e3tTU1N3d3enp6fX08vX089bW1tPT09zc3Nvb29fX19jY2P2oKI+PtPPz9PX08XBwn/rDcPbw6PLy8/ehH/jet/fkx/y0R/jYqObl4+3k2OPg3PudDr/C2fmgGvy4UtnW0viqNZmbwevr7+LCkurIlOrKmPuqL9fV04mJr9zb2u7t7PLu6vHw8O/ZuOrq6Py0Q/GnOfPEfPHs5NnEpPC9cN/e3fPy8ffLiPTRnqiow+3r5/y1TPm/aPX19TQVb1gAAAD6dFJOU////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wDeYEUjAAARrElEQVR42mL4OaBg9QJSVAMEEMOAunXRgm3zSFAOEEAD69gNK7btI0E5QAANrGMXH1m8eCXxygECaEAdO+/w7n2rFhOvHiCA6OHYeStXLgIzlq5ciiKxdvvedT8XbyDaIIAAor1j5y3evmzZnvXzfq5dsXnjsm07kMuCQ3t3/Fy7hOg8BhBAtHfsykMH16/fxrtrzaFlK5YvPLQXSWr3pt3AYF2+hlijAAKI9o7dunYrKBB5ebdvARVWSAlh0Z7te4FiS+cvJdIogACiWwbbd2QtutAW3oMrVoE8QmweAwiggSwN1vNuAzt27VEiiy+AABpIx+4COhbkzK3bdhOnASCABtCxKzfzHl4IDtMlvFuI0gEQQHRz7LxVG1ZC6VXQVMzLu3fBUkji3bWVGDMAAojmjl0Frg+2LgcWthsPr/25evvGjcuO7QSJ7eXl3b0QXMbO28NLVPEFEEA0duy8DQvA4bh0z8Hl+xZu3LSN99jyNUv2HNkKEuLlXbEAUiHs5d2+iAjTAAKIxo5duWQFJNLXgly1ag/vYlB8LwIliJ28oJCFNmh4edcTYRpAANHYsftWrEAullYiZaQFvLzLFsyHsHfw8m5aS9g0gACisWN3Q7MQlnb3dqBjV0Adu2gTMJQJmwYQQLR17KI9sFSJAYCBybtxIazu2gZ0OeHWF0AA0daxa4BZCIcUMBXwbp4PS6krgLxtBIsvgACirWNX8M5fiKOYAKYC3k3zYSG7HMjjXUfIOIAAYqBtKuCdvwR3KuA9tGQ1lAsqGnj3EGp9AQQQTR27k3fZ+iW4UwHvwfkwx67aDOIvJGAeQADR1LELeDcuWY8rzIHg2HxYxbXoEIi/cRV+8wACiJaOBabLQ+sX48h5ILBrISxkfx4FCxzGbyBAANHSscB0uX3+cuzl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" id="imLogo" name="imLogo" alt="phpMyAdmin" border="0"/></a>
+<h1>
+    Welcome to <bdo dir="ltr" xml:lang="en">phpMyAdmin </bdo></h1>
+    
+<form method="post" action="index.php" target="_parent">
+                <input type="hidden" name="collation_connection" value="utf8_unicode_ci"/>
+            <input type="hidden" name="convcharset" value="iso-8859-1"/>
+            <input type="hidden" name="server" value="1"/>
+<fieldset><legend xml:lang="en" dir="ltr">Language</legend>
+    <select name="lang" onchange="this.form.submit();" xml:lang="en" dir="ltr">
+            <option value="af-iso-8859-1">Afrikaans (iso-8859-1)</option>
+        <option value="af-utf-8">Afrikaans (utf-8)</option>
+        <option value="sq-iso-8859-1">Shqip - Albanian (iso-8859-1)</option>
+        <option value="sq-utf-8">Shqip - Albanian (utf-8)</option>
+        <option value="ar-utf-8">العربية - Arabic (utf-8)</option>
+        <option value="ar-win1256">العربية - Arabic (win1256)</option>
+        <option value="az-iso-8859-9">Azərbaycanca - Azerbaijani (iso-8859-9)</option>
+        <option value="az-utf-8">Azərbaycanca - Azerbaijani (utf-8)</option>
+        <option value="eu-iso-8859-1">Euskara - Basque (iso-8859-1)</option>
+        <option value="eu-utf-8">Euskara - Basque (utf-8)</option>
+        <option value="becyr-utf-8">Беларуская - Belarusian (utf-8)</option>
+        <option value="becyr-win1251">Беларуская - Belarusian (win1251)</option>
+        <option value="belat-utf-8">Byelorussian - Belarusian latin (utf-8)</option>
+        <option value="bs-utf-8">Bosanski - Bosnian (utf-8)</option>
+        <option value="bs-win1250">Bosanski - Bosnian (win1250)</option>
+        <option value="ptbr-iso-8859-1">Português - Brazilian portuguese (iso-8859-1)</option>
+        <option value="ptbr-utf-8">Português - Brazilian portuguese (utf-8)</option>
+        <option value="bg-koi8-r">Български - Bulgarian (koi8-r)</option>
+        <option value="bg-utf-8">Български - Bulgarian (utf-8)</option>
+        <option value="bg-win1251">Български - Bulgarian (win1251)</option>
+        <option value="ca-iso-8859-1">Català - Catalan (iso-8859-1)</option>
+        <option value="ca-utf-8">Català - Catalan (utf-8)</option>
+        <option value="zh-gb2312">中文 - Chinese simplified (gb2312)</option>
+        <option value="zh-utf-8">中文 - Chinese simplified (utf-8)</option>
+        <option value="zhtw-big5">中文 - Chinese traditional (big5)</option>
+        <option value="zhtw-utf-8">中文 - Chinese traditional (utf-8)</option>
+        <option value="hr-iso-8859-2">Hrvatski - Croatian (iso-8859-2)</option>
+        <option value="hr-utf-8">Hrvatski - Croatian (utf-8)</option>
+        <option value="hr-win1250">Hrvatski - Croatian (win1250)</option>
+        <option value="cs-iso-8859-2">Česky - Czech (iso-8859-2)</option>
+        <option value="cs-utf-8">Česky - Czech (utf-8)</option>
+        <option value="cs-win1250">Česky - Czech (win1250)</option>
+        <option value="da-iso-8859-1">Dansk - Danish (iso-8859-1)</option>
+        <option value="da-utf-8">Dansk - Danish (utf-8)</option>
+        <option value="nl-iso-8859-1">Nederlands - Dutch (iso-8859-1)</option>
+        <option value="nl-iso-8859-15">Nederlands - Dutch (iso-8859-15)</option>
+        <option value="nl-utf-8">Nederlands - Dutch (utf-8)</option>
+        <option value="en-iso-8859-1" selected="selected">English (iso-8859-1)</option>
+        <option value="en-iso-8859-15">English (iso-8859-15)</option>
+        <option value="en-utf-8">English (utf-8)</option>
+        <option value="et-iso-8859-1">Eesti - Estonian (iso-8859-1)</option>
+        <option value="et-utf-8">Eesti - Estonian (utf-8)</option>
+        <option value="fi-iso-8859-1">Suomi - Finnish (iso-8859-1)</option>
+        <option value="fi-iso-8859-15">Suomi - Finnish (iso-8859-15)</option>
+        <option value="fi-utf-8">Suomi - Finnish (utf-8)</option>
+        <option value="fr-iso-8859-1">Français - French (iso-8859-1)</option>
+        <option value="fr-iso-8859-15">Français - French (iso-8859-15)</option>
+        <option value="fr-utf-8">Français - French (utf-8)</option>
+        <option value="gl-iso-8859-1">Galego - Galician (iso-8859-1)</option>
+        <option value="gl-utf-8">Galego - Galician (utf-8)</option>
+        <option value="ka-utf-8">ქართული - Georgian (utf-8)</option>
+        <option value="de-iso-8859-1">Deutsch - German (iso-8859-1)</option>
+        <option value="de-iso-8859-15">Deutsch - German (iso-8859-15)</option>
+        <option value="de-utf-8">Deutsch - German (utf-8)</option>
+        <option value="el-iso-8859-7">Ελληνικά - Greek (iso-8859-7)</option>
+        <option value="el-utf-8">Ελληνικά - Greek (utf-8)</option>
+        <option value="he-iso-8859-8-i">עברית - Hebrew (iso-8859-8-i)</option>
+        <option value="he-utf-8">עברית - Hebrew (utf-8)</option>
+        <option value="hi-utf-8">हिन्दी - Hindi (utf-8)</option>
+        <option value="hu-iso-8859-2">Magyar - Hungarian (iso-8859-2)</option>
+        <option value="hu-utf-8">Magyar - Hungarian (utf-8)</option>
+        <option value="id-iso-8859-1">Bahasa Indonesia - Indonesian (iso-8859-1)</option>
+        <option value="id-utf-8">Bahasa Indonesia - Indonesian (utf-8)</option>
+        <option value="it-iso-8859-1">Italiano - Italian (iso-8859-1)</option>
+        <option value="it-iso-8859-15">Italiano - Italian (iso-8859-15)</option>
+        <option value="it-utf-8">Italiano - Italian (utf-8)</option>
+        <option value="ja-euc">日本語 - Japanese (euc)</option>
+        <option value="ja-sjis">日本語 - Japanese (sjis)</option>
+        <option value="ja-utf-8">日本語 - Japanese (utf-8)</option>
+        <option value="ko-euc-kr">한국어 - Korean (euc-kr)</option>
+        <option value="ko-utf-8">한국어 - Korean (utf-8)</option>
+        <option value="lv-utf-8">Latviešu - Latvian (utf-8)</option>
+        <option value="lv-win1257">Latviešu - Latvian (win1257)</option>
+        <option value="lt-utf-8">Lietuvių - Lithuanian (utf-8)</option>
+        <option value="lt-win1257">Lietuvių - Lithuanian (win1257)</option>
+        <option value="mkcyr-utf-8">Macedonian - Macedonian (utf-8)</option>
+        <option value="mkcyr-win1251">Macedonian - Macedonian (win1251)</option>
+        <option value="ms-iso-8859-1">Bahasa Melayu - Malay (iso-8859-1)</option>
+        <option value="ms-utf-8">Bahasa Melayu - Malay (utf-8)</option>
+        <option value="mn-utf-8">Монгол - Mongolian (utf-8)</option>
+        <option value="no-iso-8859-1">Norsk - Norwegian (iso-8859-1)</option>
+        <option value="no-utf-8">Norsk - Norwegian (utf-8)</option>
+        <option value="fa-utf-8">فارسی - Persian (utf-8)</option>
+        <option value="fa-win1256">فارسی - Persian (win1256)</option>
+        <option value="pl-iso-8859-2">Polski - Polish (iso-8859-2)</option>
+        <option value="pl-utf-8">Polski - Polish (utf-8)</option>
+        <option value="pl-win1250">Polski - Polish (win1250)</option>
+        <option value="pt-iso-8859-1">Português - Portuguese (iso-8859-1)</option>
+        <option value="pt-iso-8859-15">Português - Portuguese (iso-8859-15)</option>
+        <option value="pt-utf-8">Português - Portuguese (utf-8)</option>
+        <option value="ro-iso-8859-1">Română - Romanian (iso-8859-1)</option>
+        <option value="ro-utf-8">Română - Romanian (utf-8)</option>
+        <option value="ru-cp-866">Русский - Russian (cp-866)</option>
+        <option value="ru-koi8-r">Русский - Russian (koi8-r)</option>
+        <option value="ru-utf-8">Русский - Russian (utf-8)</option>
+        <option value="ru-win1251">Русский - Russian (win1251)</option>
+        <option value="srcyr-utf-8">Српски - Serbian (utf-8)</option>
+        <option value="srcyr-win1251">Српски - Serbian (win1251)</option>
+        <option value="srlat-utf-8">Srpski - Serbian latin (utf-8)</option>
+        <option value="srlat-win1250">Srpski - Serbian latin (win1250)</option>
+        <option value="si-utf-8">සිංහල - Sinhala (utf-8)</option>
+        <option value="sk-iso-8859-2">Slovenčina - Slovak (iso-8859-2)</option>
+        <option value="sk-utf-8">Slovenčina - Slovak (utf-8)</option>
+        <option value="sk-win1250">Slovenčina - Slovak (win1250)</option>
+        <option value="sl-iso-8859-2">Slovenščina - Slovenian (iso-8859-2)</option>
+        <option value="sl-utf-8">Slovenščina - Slovenian (utf-8)</option>
+        <option value="sl-win1250">Slovenščina - Slovenian (win1250)</option>
+        <option value="es-iso-8859-1">Español - Spanish (iso-8859-1)</option>
+        <option value="es-iso-8859-15">Español - Spanish (iso-8859-15)</option>
+        <option value="es-utf-8">Español - Spanish (utf-8)</option>
+        <option value="sv-iso-8859-1">Svenska - Swedish (iso-8859-1)</option>
+        <option value="sv-utf-8">Svenska - Swedish (utf-8)</option>
+        <option value="tt-iso-8859-9">Tatarça - Tatarish (iso-8859-9)</option>
+        <option value="tt-utf-8">Tatarça - Tatarish (utf-8)</option>
+        <option value="th-tis-620">ภาษาไทย - Thai (tis-620)</option>
+        <option value="th-utf-8">ภาษาไทย - Thai (utf-8)</option>
+        <option value="tr-iso-8859-9">Türkçe - Turkish (iso-8859-9)</option>
+        <option value="tr-utf-8">Türkçe - Turkish (utf-8)</option>
+        <option value="uk-utf-8">Українська - Ukrainian (utf-8)</option>
+        <option value="uk-win1251">Українська - Ukrainian (win1251)</option>
+
+    </select>
+    </fieldset>
+    <noscript>
+    <fieldset class="tblFooters">
+        <input type="submit" value="Go" />
+    </fieldset>
+    </noscript>
+</form>
+    <br/>
+<!-- Login form -->
+<form method="post" action="index.php" name="login_form" target="_top" class="login">
+    <fieldset>
+    <legend>
+Log in</legend>
+
+        <div class="item">
+            <label for="input_username">Username:</label>
+            <input type="text" name="pma_username" id="input_username" value="" size="24" class="textfield"/>
+        </div>
+        <div class="item">
+            <label for="input_password">Password:</label>
+            <input type="password" name="pma_password" id="input_password" value="" size="24" class="textfield"/>
+        </div>
+        <input type="hidden" name="server" value="1"/>    </fieldset>
+    <fieldset class="tblFooters">
+        <input value="Go" type="submit"/>
+        <input type="hidden" name="lang" value="en-iso-8859-1"/>
+        <input type="hidden" name="convcharset" value="iso-8859-1"/>
+        </fieldset>
+</form>
+    <div class="notice">Cookies must be enabled past this point.</div>
+</div>
+<script type="text/javascript">
+// <![CDATA[
+function PMA_focusInput()
+{
+    var input_username = document.getElementById('input_username');
+    var input_password = document.getElementById('input_password');
+    if (input_username.value == '') {
+        input_username.focus();
+    } else {
+        input_password.focus();
+    }
+}
+
+window.setTimeout('PMA_focusInput()', 500);
+// ]]>
+</script>
+
+
+    </body></html>
